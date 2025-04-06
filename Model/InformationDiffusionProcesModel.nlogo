@@ -115,7 +115,7 @@ to spreading  ;; each agent modifies with some probability its state considering
   ; S -> B and S -> F according to:
   ; S -> B : "spreading" function for the hoax (fi)
   ; S -> F : disseminate among the immediate neighborhood of a vertex (gi)
-  ask turtles with [state = "S" or state = "B"][
+  ask turtles with [state = "S" ] [
     let nB count link-neighbors with [state = "B"] ; n-of neighbors Believers
     let nF count link-neighbors with [state = "F"] ; n-of neighbors Fact-checkers
     let _1PlusA ( 1 + alpha-hoaxCredibility)
@@ -227,7 +227,7 @@ pForget
 pForget
 0
 0.2
-0.0
+0.02
 0.005
 1
 NIL
@@ -242,7 +242,7 @@ pVerify
 pVerify
 0
 0.2
-0.005
+0.04
 0.005
 1
 NIL
@@ -272,7 +272,7 @@ alpha-hoaxCredibility
 alpha-hoaxCredibility
 0
 1
-0.5
+0.7
 0.01
 1
 NIL
@@ -571,7 +571,7 @@ max-ticks
 max-ticks
 0
 10000
-10000.0
+1000.0
 5
 1
 NIL
@@ -586,7 +586,7 @@ max-susceptibility-to-verify
 max-susceptibility-to-verify
 0
 1
-0.1
+0.25
 0.01
 1
 NIL
