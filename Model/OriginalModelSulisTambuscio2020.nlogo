@@ -1,6 +1,6 @@
 extensions [ nw ]
 
-turtles-own [ state susceptibility ] ;; Three states of agents: "B" (believer) ;  "F" (factChecker) ; "S" (susceptible)
+turtles-own [ state ] ;; Three states of agents: "B" (believer) ;  "F" (factChecker) ; "S" (susceptible)
 
 links-own [ weigth ]  ;; the weight of the links between agents
 
@@ -18,7 +18,7 @@ end
 
 to go
   tick
-  if max-ticks > 0 and ticks > max-ticks [stop]   ;; stop condition (300 units of time)
+  if ticks > 300 [stop]   ;; stop condition (300 units of time)
 
   spreading               ;
   forgetting              ;-- Three main procedures for agent's behavior
@@ -44,30 +44,13 @@ to update-output
 end
 
 to setup-turtles
-  if Type-of-network = "Barabási–Albert algorithm"
-  [
-    nw:generate-preferential-attachment turtles links number-of-agents min-links-per-agent
-    ask turtles [ setxy random-xcor random-ycor ]
-  ]
-  if Type-of-network = "Erdős–Rényi model"
-  [
-    clear-output output-print (word "Erdős–Rényi model with " number-of-agents " nodes.")
-    nw:generate-random turtles links number-of-agents 0.00585
-    ask turtles [ setxy random-xcor random-ycor ]
-  ]
-  if Type-of-network = "Watts-Strogatz model"
-  [
-    nw:generate-watts-strogatz turtles links number-of-agents 3 0.1 [ fd 10 ]
-  ]
-  if Type-of-network = "Small-world model"
-  [
-    let r ceiling sqrt number-of-agents
-    nw:generate-small-world turtles links r r 3.0 false
-    ask turtles
-    [
-      let x who mod r
-      let y who / r
-      setxy (-15 + (x / r) * 30) (-15 + (y / r) * 30)
+  if Type-of-network = "Barabási–Albert algorithm" [ nw:generate-preferential-attachment turtles links number-of-agents 3 ]
+  if Type-of-network = "Erdős–Rényi model" [
+    if number-of-agents > 100 [
+      if PC-low-performance? and ask-proceed? [
+        clear-output output-print (word "Erdős–Rényi model with " number-of-agents " nodes.")
+        nw:generate-random turtles links number-of-agents 0.00585
+      ]
     ]
   ]
  init-edges
@@ -76,17 +59,8 @@ end
 to init-edges
   ask links [set color 3]
   ask turtles
-  [
-    set susceptibility random-float 1
-    let r random-float 1
-    ifelse r <= pSetupB
-    [ set state "B" ]
-    [
-      set r r - pSetupB
-      ifelse r <= pSetupF
-      [ set state "F"]
-      [ set state "S"]
-    ]
+  [ setxy random-xcor random-ycor
+    ifelse random 100 <= 90 [ set state "S" ][ set state "B" ]
   ]
   update-colors
 end
@@ -115,30 +89,17 @@ to spreading  ;; each agent modifies with some probability its state considering
   ; S -> B and S -> F according to:
   ; S -> B : "spreading" function for the hoax (fi)
   ; S -> F : disseminate among the immediate neighborhood of a vertex (gi)
-  ask turtles with [state = "S" ] [
+  ask turtles with [state = "S"][
     let nB count link-neighbors with [state = "B"] ; n-of neighbors Believers
     let nF count link-neighbors with [state = "F"] ; n-of neighbors Fact-checkers
-
-    let credibility alpha-hoaxCredibility
-      ; NOTE (Erwin): Added susceptibility factor for hoax credibility
-;    if enable-susceptibility [
-;      set credibility credibility * susceptibility
-;    ]
-
-    let _1PlusA ( 1 + credibility)
-    let _1MinusA ( 1 - credibility)
+    let _1PlusA ( 1 + alpha-hoaxCredibility)
+    let _1MinusA ( 1 - alpha-hoaxCredibility)
     let den (nB * _1PlusA + nF * _1MinusA)
     let f 0
     let g 0
     if den != 0 [
       set f beta-spreadingRate * ( nB * _1PlusA / den )
       set g beta-spreadingRate * ( nF * _1MinusA / den )
-    ]
-
-      ; NOTE (Erwin): Added susceptibility factor for spreading probabilitie
-    if enable-susceptibility [
-     set f f * susceptibility
-     set g g * (1.0 - susceptibility)
     ]
 
     let random-val-f random-float 1
@@ -151,15 +112,7 @@ end
 
 to forgetting  ;; B -> S; F -> S  -- Each agent, regardless of belief state, forgets the news with a fixed probability pforget
   ask turtles with [state = "B" or state = "F"][
-    let r random-float 1
-    let p pForget
-
-    ; NOTE (Erwin): Added susceptibility factor forgetting
-    if enable-susceptibility and enable-anchoring [
-     set p p * (1.0 - susceptibility)
-    ]
-
-    if r < p [
+    if random-float 1 < pForget [
       set state "S"
     ]
   ]
@@ -167,21 +120,16 @@ end
 
 to veryfing  ;; B-> F ; each agent can fact-check the hoax with a fixed probability pverify;
   ask turtles with [state = "B"][
-    let r random-float 1
-    let p pverify
-
-    ; NOTE (Erwin): Added susceptibility factor for fact checking, and a threshold so that not every agent will ever fact check
-    if enable-susceptibility [
-      ifelse susceptibility > max-susceptibility-to-verify
-      [ set p 0.0 ]
-      [ set p p * (1.0 - susceptibility) ]
-    ]
-
-
-    if r < p [
+    if random-float 1 < pVerify [
       set state "F"
     ]
   ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;; UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to-report ask-proceed?
+  report user-yes-or-no? "The network can be too wide to display in old PC: may suggest you to disable 'view updates' before press 'GO' button? Press Y to continue"
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -212,10 +160,10 @@ ticks
 30.0
 
 BUTTON
-5
-388
-78
-450
+88
+298
+161
+360
 SETUP
 setup\n
 NIL
@@ -229,10 +177,10 @@ NIL
 1
 
 BUTTON
-163
-390
-218
-423
+185
+362
+240
+395
 go-once
 go
 NIL
@@ -246,60 +194,15 @@ NIL
 0
 
 SLIDER
-2
-247
-136
-280
-pForget
-pForget
-0
-0.2
-0.1
-0.005
-1
-NIL
-HORIZONTAL
-
-SLIDER
-2
-281
-136
-314
-pVerify
-pVerify
-0
-0.2
-0.05
-0.005
-1
-NIL
-HORIZONTAL
-
-SLIDER
-136
-244
-286
-277
-beta-spreadingRate
-beta-spreadingRate
-0
-1
-0.5
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
+3
+106
 137
-279
-287
-312
-alpha-hoaxCredibility
-alpha-hoaxCredibility
+139
+pForget
+pForget
 0
 1
-0.5
+0.18
 0.01
 1
 NIL
@@ -307,15 +210,60 @@ HORIZONTAL
 
 SLIDER
 3
-37
-141
-70
-number-of-agents
-number-of-agents
+140
+137
+173
+pVerify
+pVerify
 0
-1000
-1000.0
+1
+0.05
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+138
+106
+288
+139
+beta-spreadingRate
+beta-spreadingRate
+0
+1
+0.5
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+138
+140
+288
+173
+alpha-hoaxCredibility
+alpha-hoaxCredibility
+0
+1
+0.3
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+85
+33
+288
+66
+number-of-agents
+number-of-agents
 10
+1000
+500.0
+1
 1
 NIL
 HORIZONTAL
@@ -329,7 +277,7 @@ State-of-people
 NIL
 NIL
 0.0
-100.0
+300.0
 0.0
 1000.0
 true
@@ -385,10 +333,10 @@ count turtles
 11
 
 BUTTON
-81
-388
-154
-450
+185
+298
+258
+360
 GO
 go
 T
@@ -430,40 +378,40 @@ NIL
 1
 
 CHOOSER
-77
-169
-281
-214
+52
+198
+245
+243
 Type-of-network
 Type-of-network
-"Barabási–Albert algorithm" "Erdős–Rényi model" "Watts-Strogatz model" "Small-world model"
-0
+"Barabási–Albert algorithm" "Erdős–Rényi model"
+1
 
 TEXTBOX
-5
-13
-88
-33
+4
+29
+87
+49
 Initial setting
 14
 0.0
 1
 
 TEXTBOX
-3
-228
-103
-246
+5
+89
+105
+107
 Hoaxes diffusion
 14
 0.0
 1
 
 TEXTBOX
-6
-171
-56
-189
+4
+194
+54
+212
 Graph
 14
 0.0
@@ -535,109 +483,23 @@ TEXTBOX
 1
 
 TEXTBOX
-7
-368
-157
-387
+6
+269
+156
+288
 Main commands
 14
 0.0
 1
 
-SLIDER
-151
-37
-288
-70
-min-links-per-agent
-min-links-per-agent
-1
-5
-3.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-99
-79
-191
-112
-pSetupB
-pSetupB
-0
-1
-0.1
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-194
-79
-286
-112
-pSetupF
-pSetupF
-0
-1
-0.0
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-4
-78
-96
-111
-max-ticks
-max-ticks
-0
-10000
-300.0
-5
-1
-NIL
-HORIZONTAL
-
-SLIDER
-2
-317
-283
-350
-max-susceptibility-to-verify
-max-susceptibility-to-verify
-0
-1
-0.25
-0.01
-1
-NIL
-HORIZONTAL
-
 SWITCH
+8
+362
+161
+395
+PC-low-performance?
+PC-low-performance?
 1
-125
-147
-158
-enable-susceptibility
-enable-susceptibility
-0
-1
--1000
-
-SWITCH
-150
-124
-283
-157
-enable-anchoring
-enable-anchoring
-0
 1
 -1000
 
@@ -984,7 +846,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.4.0
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -1002,6 +864,9 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="pVerify">
       <value value="0.05"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="pForget">
       <value value="0.1"/>
     </enumeratedValueSet>
@@ -1010,15 +875,6 @@ NetLogo 6.4.0
     </enumeratedValueSet>
     <enumeratedValueSet variable="beta-spreadingRate">
       <value value="0.5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="number-of-agents">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="min-links-per-agent">
-      <value value="3"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="max-susceptibility-to-verify">
-      <value value="0.25"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
