@@ -989,7 +989,7 @@ NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="30" runMetricsEveryStep="true">
+  <experiment name="EX1. Baseline" repetitions="30" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <exitCondition>ticks = 301</exitCondition>
@@ -999,6 +999,12 @@ NetLogo 6.4.0
     <enumeratedValueSet variable="Type-of-network">
       <value value="&quot;Barabási–Albert algorithm&quot;"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupB">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupF">
+      <value value="0"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="pVerify">
       <value value="0.05"/>
     </enumeratedValueSet>
@@ -1006,7 +1012,7 @@ NetLogo 6.4.0
       <value value="0.1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="alpha-hoaxCredibility">
-      <value value="0.8"/>
+      <value value="0.25"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="beta-spreadingRate">
       <value value="0.5"/>
@@ -1019,6 +1025,118 @@ NetLogo 6.4.0
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-susceptibility-to-verify">
       <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-susceptibility">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-anchoring">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="EX2. WithoutAnchoring" repetitions="30" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <exitCondition>ticks = 301</exitCondition>
+    <metric>count turtles with [state = "B"]</metric>
+    <metric>count turtles with [state = "F"]</metric>
+    <metric>count turtles with [state = "S"]</metric>
+    <enumeratedValueSet variable="Type-of-network">
+      <value value="&quot;Barabási–Albert algorithm&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupB">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupF">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pVerify">
+      <value value="0.05"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pForget">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="alpha-hoaxCredibility">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beta-spreadingRate">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-links-per-agent">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-susceptibility-to-verify">
+      <value value="0.1"/>
+      <value value="0.2"/>
+      <value value="0.3"/>
+      <value value="0.4"/>
+      <value value="0.5"/>
+      <value value="0.6"/>
+      <value value="0.7"/>
+      <value value="0.8"/>
+      <value value="0.9"/>
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-susceptibility">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-anchoring">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="EX3. WithAnchoring" repetitions="30" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <exitCondition>ticks = 301</exitCondition>
+    <metric>count turtles with [state = "B"]</metric>
+    <metric>count turtles with [state = "F"]</metric>
+    <metric>count turtles with [state = "S"]</metric>
+    <enumeratedValueSet variable="Type-of-network">
+      <value value="&quot;Barabási–Albert algorithm&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupB">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pSetupF">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pVerify">
+      <value value="0.05"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="pForget">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="alpha-hoaxCredibility">
+      <value value="0.25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beta-spreadingRate">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-of-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-links-per-agent">
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-susceptibility-to-verify">
+      <value value="0.1"/>
+      <value value="0.2"/>
+      <value value="0.3"/>
+      <value value="0.4"/>
+      <value value="0.5"/>
+      <value value="0.6"/>
+      <value value="0.7"/>
+      <value value="0.8"/>
+      <value value="0.9"/>
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-susceptibility">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="enable-anchoring">
+      <value value="true"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
