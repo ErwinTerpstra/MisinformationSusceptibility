@@ -989,7 +989,7 @@ NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="EX1. Baseline" repetitions="30" runMetricsEveryStep="true">
+  <experiment name="EX1. Baseline" repetitions="300" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <exitCondition>ticks = 301</exitCondition>
@@ -1033,7 +1033,7 @@ NetLogo 6.4.0
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="EX2. WithoutAnchoring" repetitions="30" runMetricsEveryStep="true">
+  <experiment name="EX2. WithoutAnchoring" repetitions="300" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <exitCondition>ticks = 301</exitCondition>
@@ -1080,13 +1080,13 @@ NetLogo 6.4.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="enable-susceptibility">
-      <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="enable-anchoring">
       <value value="false"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="EX3. WithAnchoring" repetitions="30" runMetricsEveryStep="true">
+  <experiment name="EX3. WithAnchoring" repetitions="300" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <exitCondition>ticks = 301</exitCondition>
@@ -1133,7 +1133,7 @@ NetLogo 6.4.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="enable-susceptibility">
-      <value value="false"/>
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="enable-anchoring">
       <value value="true"/>
